@@ -1,0 +1,21 @@
+{
+  "name": "graffiti",
+  "version": "1.0.0",
+  "description": "An application to receive notifications about the Grenoble common transport (TAG) and plan your schedule.",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon server.js"
+  },
+  "author": "K1L14N",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.7"
+  }
+}

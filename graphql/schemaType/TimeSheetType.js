@@ -1,16 +1,38 @@
-const axios = require("axios");
-
 const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
   GraphQLFloat,
-  GraphQLList,
-  GraphQLSchema
+  GraphQLList
 } = require("graphql");
 
 // Time sheet
-// example: https://data.metromobilite.fr/api/ficheHoraires/json?route=SEM:C&time=1544217497886
+// @example: https://data.metromobilite.fr/api/ficheHoraires/json?route=SEM:C&time=1544217497886
+// @graphql:
+`{
+  timeSheet(route: "SEM:B") {
+    zero {
+    arrets {
+        stopId
+        trips
+        stopName
+        lat
+        lon
+        parentStation {
+          id
+          code
+          city
+          name
+          lat
+          lon
+        }
+    }
+    prevTime
+    nextTime
+    }
+  }
+}`;
+
 const ParentStationType = new GraphQLObjectType({
   name: "ParentStation",
   fields: () => ({
@@ -67,62 +89,4 @@ const TimeSheetType = new GraphQLObjectType({
   })
 });
 
-// Root Query
-`{
-    timeSheet(route: "SEM:B") {
-        zero {
-        arrets {
-            stopId
-            trips
-            stopName
-            lat
-            lon
-            parentStation {
-            id
-            code
-            city
-            name
-            lat
-            lon
-            }
-        }
-        prevTime
-        nextTime
-        }
-    }
-}`;
-
-const RootQuery = new GraphQLObjectType({
-  name: "RootQueryType",
-  fields: () => ({
-    timeSheet: {
-      type: TimeSheetType,
-      args: {
-        route: { type: GraphQLString },
-        time: { type: GraphQLFloat }
-      },
-      resolve(parent, args) {
-        return axios
-          .get(
-            `https://data.metromobilite.fr/api/ficheHoraires/json?route=${
-              args.route
-            }&time=${
-              args.time !== undefined ? args.time : new Date().getTime()
-            }`
-          )
-          .then(res => {
-            console.log(res.data);
-            return res.data;
-          })
-          .catch(err => {
-            console.error(err.response.status, err.response.statusText);
-            return err;
-          });
-      }
-    }
-  })
-});
-
-module.exports = new GraphQLSchema({
-  query: RootQuery
-});
+module.exports = TimeSheetType;

@@ -18,8 +18,8 @@ const ParentStationType = new GraphQLObjectType({
     code: { type: GraphQLString },
     city: { type: GraphQLString },
     name: { type: GraphQLString },
-    lat: { type: GraphQLInt },
-    lon: { type: GraphQLInt }
+    lat: { type: GraphQLFloat },
+    lon: { type: GraphQLFloat }
   })
 });
 
@@ -35,25 +35,11 @@ const StationType = new GraphQLObjectType({
   })
 });
 
-const ArretsType = new GraphQLObjectType({
-  name: "Arrets",
-  fields: () => ({
-    arrets: { type: new GraphQLList(StationType) }
-  })
-});
-
 const TripType = new GraphQLObjectType({
   name: "Trip",
   fields: () => ({
     tripId: { type: GraphQLString },
     pickupType: { type: GraphQLString }
-  })
-});
-
-const TripsType = new GraphQLObjectType({
-  name: "Trips",
-  fields: () => ({
-    trips: { type: new GraphQLList(TripType) }
   })
 });
 
@@ -70,26 +56,39 @@ const SheetType = new GraphQLObjectType({
 const TimeSheetType = new GraphQLObjectType({
   name: "TimeSheet",
   fields: () => ({
-    0: { type: SheetType },
-    1: { type: SheetType }
+    zero: {
+      type: SheetType,
+      resolve: parent => parent["0"]
+    },
+    one: {
+      type: SheetType,
+      resolve: parent => parent["1"]
+    }
   })
 });
 
 // Root Query
 `{
-    timeSheet(route: "SEM:C") {
+    timeSheet(route: "SEM:B") {
+        zero {
         arrets {
             stopId
+            trips
             stopName
             lat
             lon
-        }
-        trips {
-            tripId
-            pickupType
+            parentStation {
+            id
+            code
+            city
+            name
+            lat
+            lon
+            }
         }
         prevTime
         nextTime
+        }
     }
 }`;
 
@@ -97,19 +96,27 @@ const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: () => ({
     timeSheet: {
-      type: SheetType,
+      type: TimeSheetType,
       args: {
-        route: { type: GraphQLString }
+        route: { type: GraphQLString },
+        time: { type: GraphQLFloat }
       },
       resolve(parent, args) {
         return axios
           .get(
             `https://data.metromobilite.fr/api/ficheHoraires/json?route=${
               args.route
-            }&time=${new Date().getTime()}`
+            }&time=${
+              args.time !== undefined ? args.time : new Date().getTime()
+            }`
           )
           .then(res => {
-            return res.data[0];
+            console.log(res.data);
+            return res.data;
+          })
+          .catch(err => {
+            console.error(err.response.status, err.response.statusText);
+            return err;
           });
       }
     }

@@ -12,23 +12,23 @@ const {
 `{
   timeSheet(route: "SEM:B") {
     zero {
-    arrets {
-        stopId
-        trips
-        stopName
-        lat
-        lon
-        parentStation {
-          id
-          code
-          city
-          name
+      arrets {
+          stopId
+          trips
+          stopName
           lat
           lon
-        }
-    }
-    prevTime
-    nextTime
+          parentStation {
+            id
+            code
+            city
+            name
+            lat
+            lon
+          }
+      }
+      prevTime
+      nextTime
     }
   }
 }`;

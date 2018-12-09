@@ -12,8 +12,27 @@ const {
 // @param code: {SEM, C38}:{X} (TAG or TransIsère):(GEN...)
 // @graphql:
 `{
-    timeStop(code: "SEM:GENVALMY") {
-        
+    timeStop(code: "SEM:GENVALMY | 2222") {
+        pattern {
+            id
+            desc
+            dir
+            shortDesc
+        }
+        times {
+            stopId
+            stopName
+            scheduledArrival
+            scheduledDeparture
+            realtimeArrival
+            realtimeDeparture
+            arrivalDelay
+            departureDelay
+            timepoint
+            realtime
+            serviceDay
+            tripId
+        }
     }
 }`;
 
